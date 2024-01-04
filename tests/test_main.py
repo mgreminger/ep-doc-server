@@ -1,11 +1,15 @@
-import os
+import os, filecmp
 
 from fastapi.testclient import TestClient
 
-from app.main import app
+from app.main import app, Settings, get_settings
 
 client = TestClient(app)
 
+def get_test_settings():
+    return Settings(testing=True)
+
+app.dependency_overrides[get_settings] = get_test_settings
 
 def test_md_to_docx():
     files = {'request_file': ("input.md", open('./tests/input.md', 'rb'), "text/markdown")}
@@ -21,4 +25,4 @@ def test_md_to_docx():
     with open('./tests/output/output.docx', 'wb') as output_docx:
         output_docx.write(response.content)
     
-    
+    assert filecmp.cmp('./tests/output/output.docx', './tests/output_reference.docx', shallow=False)

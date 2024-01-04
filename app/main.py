@@ -1,17 +1,25 @@
-from typing import Literal, cast, BinaryIO, Annotated
+from typing import Literal, BinaryIO, Annotated
 
 import tempfile
 import asyncio
 import shutil
 from pathlib import Path
 
-from fastapi import FastAPI, UploadFile, BackgroundTasks
+from fastapi import FastAPI, UploadFile, BackgroundTasks, Depends
 from fastapi.responses import FileResponse
+
+from pydantic_settings import BaseSettings
 
 MD_FILE_NAME = "input.md"
 OUTPUT_FILE_NAME_BASE = "output"
 
+class Settings(BaseSettings):
+    testing: bool = True
+
 app = FastAPI()
+
+def get_settings():
+    return Settings()
 
 async def delete_temp_directory(temp_dir_name):
     await asyncio.to_thread(shutil.rmtree, temp_dir_name)
@@ -19,9 +27,12 @@ async def delete_temp_directory(temp_dir_name):
 
 @app.post("/docgen/{doc_type}")
 async def convert_markdown_file(request_file: UploadFile, doc_type: Literal['docx', 'pdf'],
-                                background_tasks: BackgroundTasks):
+                                background_tasks: BackgroundTasks,
+                                settings: Annotated[Settings, Depends(get_settings)]):
     temp_dir_name = tempfile.mkdtemp()
     print(f"Created dir: {temp_dir_name}")
+
+    env = {"SOURCE_DATE_EPOCH": "1704329963"} if settings.testing else None
 
     background_tasks.add_task(delete_temp_directory, temp_dir_name)
 
@@ -35,7 +46,8 @@ async def convert_markdown_file(request_file: UploadFile, doc_type: Literal['doc
             cmd=cmd,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
-            cwd=temp_dir_name)
+            cwd=temp_dir_name,
+            env=env)
 
         stdout, stderr = await proc.communicate()
 
