@@ -4,6 +4,8 @@ import tempfile
 import asyncio
 import shutil
 from pathlib import Path
+from functools import lru_cache
+import os
 
 from fastapi import FastAPI, UploadFile, BackgroundTasks, Depends
 from fastapi.responses import FileResponse
@@ -18,8 +20,12 @@ class Settings(BaseSettings):
 
 app = FastAPI()
 
+@lru_cache
 def get_settings():
     return Settings()
+
+testing_env = os.environ.copy()
+testing_env["SOURCE_DATE_EPOCH"] = "1704329963"
 
 async def delete_temp_directory(temp_dir_name):
     await asyncio.to_thread(shutil.rmtree, temp_dir_name)
@@ -32,7 +38,7 @@ async def convert_markdown_file(request_file: UploadFile, doc_type: Literal['doc
     temp_dir_name = tempfile.mkdtemp()
     print(f"Created dir: {temp_dir_name}")
 
-    env = {"SOURCE_DATE_EPOCH": "1704329963"} if settings.testing else None
+    env = testing_env if settings.testing else None
 
     background_tasks.add_task(delete_temp_directory, temp_dir_name)
 
