@@ -26,3 +26,5 @@ def test_md_to_docx():
         output_docx.write(response.content)
     
     assert filecmp.cmp('./tests/output/output.docx', './tests/output_reference.docx', shallow=False)
+
+    assert False
