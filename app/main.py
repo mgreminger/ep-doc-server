@@ -14,6 +14,10 @@ from pydantic_settings import BaseSettings
 
 MD_FILE_NAME = "input.md"
 OUTPUT_FILE_NAME_BASE = "output"
+MIME_TYPES = {
+    "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "pdf": "application/pdf"
+}
 
 class Settings(BaseSettings):
     testing: bool = True
@@ -63,4 +67,6 @@ async def convert_markdown_file(request_file: UploadFile, doc_type: Literal['doc
         if stderr:
             print(f'[stderr]\n{stderr.decode()}')
 
-    return FileResponse(Path(temp_dir_name) / output_file_name)
+    return FileResponse(Path(temp_dir_name) / output_file_name,
+                        media_type=MIME_TYPES[doc_type],
+                        filename = f"output.{doc_type}")
