@@ -35,3 +35,8 @@ def test_md_to_pdf():
     
     # file comparison not working (change identifier metadata?) so will just check size
     assert len(response.content) > 250000
+
+def test_error_on_binary_input():
+    files = {'request_file': ("input.md", open('./tests/output_reference.docx', 'rb'), "text/markdown")}
+    response = client.post("/docgen/docx", files=files)
+    assert response.status_code == 415

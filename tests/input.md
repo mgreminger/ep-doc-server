@@ -1,3 +1,4 @@
+<!-- Created with EngineeringPaper.xyz -->
 # Database Consistency Test
 # Introduction
 This EngineeringPaper.xyz sheet shows how to calculated the maximum stress and displacement for a cantilever beam loaded by a vertical force at its end. The geometry of the beam is shown in the figure below. The beam has a rectangular cross section with height h and width b. The maximum stress in a cantilever with length much larger than its height is due to bending stress that occurs at the base of the beam. For a downward force, the maximum stress will be a tensile force at the top of the beam and a compressive stress at the bottom of the beam. For beam sections that are symmetric top to bottom, the maximum tensile and compressive stresses will have equal magnitude.

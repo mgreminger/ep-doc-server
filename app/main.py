@@ -7,7 +7,7 @@ from pathlib import Path
 from functools import lru_cache
 import os
 
-from fastapi import FastAPI, UploadFile, BackgroundTasks, Depends
+from fastapi import FastAPI, UploadFile, BackgroundTasks, Depends, HTTPException
 from fastapi.responses import FileResponse
 
 from pydantic_settings import BaseSettings
@@ -39,12 +39,24 @@ async def delete_temp_directory(temp_dir_name):
 async def convert_markdown_file(request_file: UploadFile, doc_type: Literal['docx', 'pdf'],
                                 background_tasks: BackgroundTasks,
                                 settings: Annotated[Settings, Depends(get_settings)]):
+    
+    # verify file (protects against uploading a binary file, which will cause pandoc to hang)
+    first_line = await request_file.read(43)
+    try:
+        first_line = first_line.decode('utf-8')
+    except UnicodeDecodeError:
+        raise HTTPException(status_code=415, detail="Unsupported file type")
+
+    if first_line != "<!-- Created with EngineeringPaper.xyz -->\n":
+        raise HTTPException(status_code=415, detail="Unsupported file type")
+
+    await request_file.seek(0)
+
     temp_dir_name = tempfile.mkdtemp()
     print(f"Created dir: {temp_dir_name}")
+    background_tasks.add_task(delete_temp_directory, temp_dir_name)
 
     env = testing_env if settings.testing else None
-
-    background_tasks.add_task(delete_temp_directory, temp_dir_name)
 
     output_file_name = f"{OUTPUT_FILE_NAME_BASE}.{doc_type}"
 
