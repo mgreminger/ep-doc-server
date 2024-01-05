@@ -9,6 +9,7 @@ import os
 
 from fastapi import FastAPI, UploadFile, BackgroundTasks, Depends, HTTPException
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from pydantic_settings import BaseSettings
 
@@ -23,6 +24,14 @@ class Settings(BaseSettings):
     testing: bool = True
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8788", "https://engineeringpaper.xyz", "https://epxyz.com"],
+    allow_origin_regex=r"https://.*\.engineeringpaper\.pages\.dev",
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 @lru_cache
 def get_settings():
