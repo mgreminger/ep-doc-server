@@ -16,7 +16,7 @@ app.dependency_overrides[get_settings] = get_test_settings
 
 @pytest.fixture(scope="session", autouse=True)
 def run_before_all_tests():
-    shutil.rmtree('./tests/output')
+    shutil.rmtree('./tests/output', ignore_errors=True)
     os.makedirs('./tests/output')
 
 def test_md_to_docx():
