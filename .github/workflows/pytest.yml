@@ -17,4 +17,4 @@ jobs:
         run: docker build -t myimage:testing --build-arg ENVIRONMENT=testing .
 
       - name: Run pytest
-        run: docker run --name mycontainer.testing myimage:testing "python3 -m pytest"
+        run: docker run --name mycontainer.testing myimage:testing "pytest"
