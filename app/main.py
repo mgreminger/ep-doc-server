@@ -48,6 +48,10 @@ class DocConversionTask:
 
             if proc.returncode != 0:
                 raise HTTPException(status_code=500, detail=stderr.decode())
+            
+            # make sure output file exists
+            if not os.path.isfile(Path(self.temp_dir_name) / output_file_name):
+                raise HTTPException(status_code=500, detail="Pandoc executed successfully but output file does not exist. Report issue to support@engineeringpaper.xyz")
         
         except Exception as e:
             self.future.set_exception(e)
@@ -86,8 +90,7 @@ testing_env = os.environ.copy()
 testing_env["SOURCE_DATE_EPOCH"] = "1704329963"
 
 async def delete_temp_directory(temp_dir_name):
-    await asyncio.to_thread(shutil.rmtree, temp_dir_name)
-    print(f"Deleted dir: {temp_dir_name}")
+    await asyncio.to_thread(shutil.rmtree, temp_dir_name, ignore_errors=True)
 
 
 @app.post("/docgen/{doc_type}")
@@ -113,7 +116,6 @@ async def convert_markdown_file(request_file: UploadFile, doc_type: Literal['doc
         await request_file.seek(0)
 
         temp_dir_name = tempfile.mkdtemp()
-        print(f"Created dir: {temp_dir_name}")
         background_tasks.add_task(delete_temp_directory, temp_dir_name)
 
         env = testing_env if testing else None
