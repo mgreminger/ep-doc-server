@@ -1,25 +1,29 @@
-import os, filecmp, asyncio, shutil
+import os, filecmp, asyncio, shutil, subprocess, time
 
 import pytest
-from httpx import AsyncClient
+import httpx
 
-from fastapi.testclient import TestClient
+@pytest.fixture(scope="session", autouse=True)
+def start_server():
+    server_process = subprocess.Popen(["uvicorn", "app.main:app", "--host",
+                                       "127.0.0.1", "--port", "8000"])
+    time.sleep(5)
 
-from app.main import app, Settings, get_settings
+    yield
 
-client = TestClient(app)
+    server_process.terminate()
 
-def get_test_settings():
-    return Settings(testing=True)
-
-app.dependency_overrides[get_settings] = get_test_settings
 
 @pytest.fixture(scope="session", autouse=True)
 def run_before_all_tests():
     shutil.rmtree('./tests/output', ignore_errors=True)
     os.makedirs('./tests/output')
 
-def test_md_to_docx():
+@pytest.fixture
+def client():
+    yield httpx.Client(base_url="http://127.0.0.1:8000", timeout=10)
+
+def test_md_to_docx(client):
     files = {'request_file': ("input.md", open('./tests/input.md', 'rb'), "text/markdown")}
     response = client.post("/docgen/docx", files=files)
     assert response.status_code == 200
@@ -30,7 +34,7 @@ def test_md_to_docx():
     
     assert filecmp.cmp('./tests/output/output.docx', './tests/output_reference.docx', shallow=False)
 
-def test_md_to_pdf():
+def test_md_to_pdf(client):
     files = {'request_file': ("input.md", open('./tests/input.md', 'rb'), "text/markdown")}
     response = client.post("/docgen/pdf", files=files)
     assert response.status_code == 200
@@ -42,7 +46,7 @@ def test_md_to_pdf():
     # file comparison not working (change identifier metadata?) so will just check size
     assert len(response.content) > 250000
 
-def test_error_on_binary_input():
+def test_error_on_binary_input(client):
     files = {'request_file': ("input.md", open('./tests/output_reference.docx', 'rb'), "text/markdown")}
     response = client.post("/docgen/docx", files=files)
     assert response.status_code == 415
@@ -50,10 +54,10 @@ def test_error_on_binary_input():
 @pytest.mark.anyio
 async def test_simultaneous_requests():
     response_futures = []
-    async with AsyncClient(app=app, base_url="http://test") as ac:
+    async with httpx.AsyncClient(base_url="http://127.0.0.1:8000", timeout=120) as client:
         for i in range(20):
           files = {'request_file': ("input.md", open(f'./tests/input_{i}.md', 'rb'), "text/markdown")}
-          response_futures.append(ac.post("/docgen/docx", files=files))
+          response_futures.append(client.post("/docgen/docx", files=files))
 
         responses = await asyncio.gather(*response_futures)
 
