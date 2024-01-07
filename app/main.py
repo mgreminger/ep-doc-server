@@ -1,17 +1,16 @@
-from typing import Literal, BinaryIO, Annotated
+from typing import Literal
 
 import tempfile
 import asyncio
 from contextlib import asynccontextmanager
 import shutil
 from pathlib import Path
-from functools import lru_cache
 import os
 
-from fastapi import FastAPI, UploadFile, BackgroundTasks, Depends, HTTPException
+from fastapi import FastAPI, UploadFile, BackgroundTasks, HTTPException
 from fastapi.responses import FileResponse
 
-from pydantic_settings import BaseSettings
+testing = bool(os.getenv("TESTING", False))
 
 SUBPROCESS_TIMEOUT = 10 # seconds
 MAX_INPUT_SIZE = 5000000 # bytes
@@ -81,15 +80,7 @@ async def lifespan(app: FastAPI):
         task.cancel()
     await asyncio.gather(*tasks, return_exceptions=True)
 
-
-class Settings(BaseSettings):
-    testing: bool = True
-
 app = FastAPI(lifespan=lifespan)
-
-@lru_cache
-def get_settings():
-    return Settings()
 
 testing_env = os.environ.copy()
 testing_env["SOURCE_DATE_EPOCH"] = "1704329963"
@@ -101,8 +92,7 @@ async def delete_temp_directory(temp_dir_name):
 
 @app.post("/docgen/{doc_type}")
 async def convert_markdown_file(request_file: UploadFile, doc_type: Literal['docx', 'pdf'],
-                                background_tasks: BackgroundTasks,
-                                settings: Annotated[Settings, Depends(get_settings)]):
+                                background_tasks: BackgroundTasks):
     # make sure file is not too large
     if request_file.size and (request_file.size > MAX_INPUT_SIZE):
         raise HTTPException(status_code=413, detail="Sheet too large for document conversion, reduce size of images in documentation cells.")
@@ -123,7 +113,7 @@ async def convert_markdown_file(request_file: UploadFile, doc_type: Literal['doc
     print(f"Created dir: {temp_dir_name}")
     background_tasks.add_task(delete_temp_directory, temp_dir_name)
 
-    env = testing_env if settings.testing else None
+    env = testing_env if testing else None
 
     with open(Path(temp_dir_name) / MD_FILE_NAME, 'wb') as md_input_file:
         await asyncio.to_thread(shutil.copyfileobj, request_file.file, md_input_file)

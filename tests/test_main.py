@@ -5,8 +5,12 @@ import httpx
 
 @pytest.fixture(scope="session", autouse=True)
 def start_server():
+    testing_env = os.environ.copy()
+    testing_env["TESTING"] = "1"
+
     server_process = subprocess.Popen(["uvicorn", "app.main:app", "--host",
-                                       "127.0.0.1", "--port", "8000"])
+                                       "127.0.0.1", "--port", "8000"],
+                                       env=testing_env)
     time.sleep(5)
 
     yield
