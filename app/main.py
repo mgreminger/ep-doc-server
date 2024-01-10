@@ -84,7 +84,7 @@ async def lifespan(app: FastAPI):
         task.cancel()
     await asyncio.gather(*tasks, return_exceptions=True)
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None)
 
 testing_env = os.environ.copy()
 testing_env["SOURCE_DATE_EPOCH"] = "1704329963"
