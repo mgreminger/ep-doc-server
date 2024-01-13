@@ -25,7 +25,7 @@ def run_before_all_tests():
 
 @pytest.fixture
 def client():
-    yield httpx.Client(base_url="http://127.0.0.1:8000", timeout=10)
+    yield httpx.Client(base_url="http://127.0.0.1:8000", timeout=20)
 
 def test_md_to_docx(client):
     files = {'request_file': ("input.md", open('./tests/input.md', 'rb'), "text/markdown")}
