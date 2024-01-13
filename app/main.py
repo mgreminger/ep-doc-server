@@ -32,7 +32,15 @@ class DocConversionTask:
     async def convert(self):
         output_file_name = f"{OUTPUT_FILE_NAME_BASE}.{self.doc_type}"
 
-        cmd = f"pandoc --from markdown --to {self.doc_type} --standalone --embed-resources --no-highlight {MD_FILE_NAME} -o {output_file_name}"
+        if self.doc_type == "pdf":
+            cmd = f"pandoc --from markdown --to pdf --standalone --embed-resources --no-highlight \
+                    -V 'mainfont:DejaVuSerif' \
+                    -V 'sansfont:DejaVuSans' \
+                    -V 'monofont:DejaVuSansMono' \
+                    --pdf-engine=lualatex {MD_FILE_NAME} -o {output_file_name}"
+        else:
+            cmd = f"pandoc --from markdown --to {self.doc_type} --standalone --embed-resources --no-highlight {MD_FILE_NAME} -o {output_file_name}"
+            
         try:
             try:
                 proc = await asyncio.wait_for(asyncio.create_subprocess_shell(

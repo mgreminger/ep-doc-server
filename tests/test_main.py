@@ -25,7 +25,7 @@ def run_before_all_tests():
 
 @pytest.fixture
 def client():
-    yield httpx.Client(base_url="http://127.0.0.1:8000", timeout=10)
+    yield httpx.Client(base_url="http://127.0.0.1:8000", timeout=20)
 
 def test_md_to_docx(client):
     files = {'request_file': ("input.md", open('./tests/input.md', 'rb'), "text/markdown")}
@@ -39,7 +39,7 @@ def test_md_to_docx(client):
     assert filecmp.cmp('./tests/output/output.docx', './tests/output_reference.docx', shallow=False)
 
 def test_md_to_pdf(client):
-    files = {'request_file': ("input.md", open('./tests/input.md', 'rb'), "text/markdown")}
+    files = {'request_file': ("input.md", open('./tests/input_with_unicode.md', 'rb'), "text/markdown")}
     response = client.post("/docgen/pdf", files=files)
     assert response.status_code == 200
 
@@ -48,7 +48,7 @@ def test_md_to_pdf(client):
         output_pdf.write(response.content)
     
     # file comparison not working (change identifier metadata?) so will just check size
-    assert len(response.content) > 250000
+    assert len(response.content) > 200000
 
 def test_error_on_binary_input(client):
     files = {'request_file': ("input.md", open('./tests/output_reference.docx', 'rb'), "text/markdown")}

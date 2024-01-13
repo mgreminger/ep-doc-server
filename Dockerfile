@@ -3,6 +3,7 @@ FROM pandoc/latex
 ARG ENVIRONMENT=production
 
 RUN apk add --no-cache python3 py3-pip
+RUN apk add --no-cache ttf-dejavu
 
 WORKDIR /code
  
