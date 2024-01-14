@@ -6,13 +6,15 @@ from contextlib import asynccontextmanager
 import shutil
 from pathlib import Path
 import os
+import time
 
 from fastapi import FastAPI, UploadFile, BackgroundTasks, HTTPException
 from fastapi.responses import FileResponse
 
 testing = bool(os.getenv("TESTING", False))
 
-SUBPROCESS_TIMEOUT = 60 # seconds
+SUBPROCESS_TIMEOUT = 30 # seconds
+MAX_QUEUE_WAIT_TIME = 35 # max time to wait in queue before bailing, prevents case where queue gets so long that no requests finish before browser timeout
 MAX_INPUT_SIZE = 5000000 # bytes
 MAX_CONCURRENT_PANDOC_RUNS = 2
 MD_FILE_NAME = "input.md"
@@ -28,6 +30,7 @@ class DocConversionTask:
         self.temp_dir_name = temp_dir_name
         self.env = env
         self.future = asyncio.get_running_loop().create_future()
+        self.wait_start_time = time.monotonic()
 
     async def convert(self):
         output_file_name = f"{OUTPUT_FILE_NAME_BASE}.{self.doc_type}"
@@ -42,6 +45,9 @@ class DocConversionTask:
             cmd = f"pandoc --from markdown --to {self.doc_type} --standalone --embed-resources --no-highlight {MD_FILE_NAME} -o {output_file_name}"
             
         try:
+            if (time.monotonic() - self.wait_start_time) > MAX_QUEUE_WAIT_TIME:
+                raise HTTPException(status_code=503, detail="The document conversion service is currently operating at capacity, please retry later")
+
             proc = await asyncio.create_subprocess_shell(
                 cmd=cmd,
                 stdout=asyncio.subprocess.PIPE,
@@ -56,7 +62,11 @@ class DocConversionTask:
                     proc.kill()
                 except OSError:
                     pass
-                raise HTTPException(status_code=500, detail="Document Creation Timeout")
+                
+                if self.doc_type == "pdf":
+                    raise HTTPException(status_code=500, detail="Document creation timeout, consider creating a .docx file instead of a .pdf file or reducing the number of images or plots")
+                else:
+                    raise HTTPException(status_code=500, detail="Document Creation Timeout")
 
             if proc.returncode != 0:
                 raise HTTPException(status_code=500, detail=stderr.decode())
