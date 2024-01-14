@@ -12,9 +12,9 @@ from fastapi.responses import FileResponse
 
 testing = bool(os.getenv("TESTING", False))
 
-SUBPROCESS_TIMEOUT = 10 # seconds
+SUBPROCESS_TIMEOUT = 30 # seconds
 MAX_INPUT_SIZE = 5000000 # bytes
-MAX_CONCURRENT_PANDOC_RUNS = 2
+MAX_CONCURRENT_PANDOC_RUNS = 4
 MD_FILE_NAME = "input.md"
 OUTPUT_FILE_NAME_BASE = "output"
 MIME_TYPES = {
