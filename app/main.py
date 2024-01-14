@@ -14,7 +14,7 @@ testing = bool(os.getenv("TESTING", False))
 
 SUBPROCESS_TIMEOUT = 30 # seconds
 MAX_INPUT_SIZE = 5000000 # bytes
-MAX_CONCURRENT_PANDOC_RUNS = 4
+MAX_CONCURRENT_PANDOC_RUNS = 3
 MD_FILE_NAME = "input.md"
 OUTPUT_FILE_NAME_BASE = "output"
 MIME_TYPES = {
@@ -51,11 +51,11 @@ class DocConversionTask:
 
             try:
                 stdout, stderr = await asyncio.wait_for(proc.communicate(), SUBPROCESS_TIMEOUT)
-            except TimeoutError:
+            except (TimeoutError, asyncio.exceptions.TimeoutError): # Python 3.11 uses TimeoutError instead of asyncio.exceptions.TimeoutError
                 try:
                     proc.kill()
                 except OSError:
-                    pass    
+                    pass
                 raise HTTPException(status_code=500, detail="Document Creation Timeout")
 
             if proc.returncode != 0:
