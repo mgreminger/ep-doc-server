@@ -14,7 +14,7 @@ testing = bool(os.getenv("TESTING", False))
 
 SUBPROCESS_TIMEOUT = 60 # seconds
 MAX_INPUT_SIZE = 5000000 # bytes
-MAX_CONCURRENT_PANDOC_RUNS = 3
+MAX_CONCURRENT_PANDOC_RUNS = 2
 MD_FILE_NAME = "input.md"
 OUTPUT_FILE_NAME_BASE = "output"
 MIME_TYPES = {
