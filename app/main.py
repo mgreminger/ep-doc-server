@@ -42,17 +42,21 @@ class DocConversionTask:
             cmd = f"pandoc --from markdown --to {self.doc_type} --standalone --embed-resources --no-highlight {MD_FILE_NAME} -o {output_file_name}"
             
         try:
-            try:
-                proc = await asyncio.wait_for(asyncio.create_subprocess_shell(
-                    cmd=cmd,
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE,
-                    cwd=self.temp_dir_name,
-                    env=self.env), SUBPROCESS_TIMEOUT)
-            except TimeoutError:
-                raise HTTPException(status_code=500, detail="Document Creation Timeout")
+            proc = await asyncio.create_subprocess_shell(
+                cmd=cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+                cwd=self.temp_dir_name,
+                env=self.env)
 
-            stdout, stderr = await proc.communicate()
+            try:
+                stdout, stderr = await asyncio.wait_for(proc.communicate(), SUBPROCESS_TIMEOUT)
+            except TimeoutError:
+                try:
+                    proc.kill()
+                except OSError:
+                    pass    
+                raise HTTPException(status_code=500, detail="Document Creation Timeout")
 
             if proc.returncode != 0:
                 raise HTTPException(status_code=500, detail=stderr.decode())
