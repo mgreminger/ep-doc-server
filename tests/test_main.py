@@ -73,3 +73,7 @@ async def test_simultaneous_requests():
     # check all of the files that have been created
     for i in range(20):
       assert filecmp.cmp(f'./tests/output/output_{i}.docx', f'./tests/output_reference_{i}.docx', shallow=False)
+
+def test_health_check(client):
+    response = client.get("/healthz")
+    assert response.status_code == 200

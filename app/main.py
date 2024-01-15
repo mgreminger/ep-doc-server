@@ -8,7 +8,7 @@ from pathlib import Path
 import os
 import time
 
-from fastapi import FastAPI, UploadFile, BackgroundTasks, HTTPException
+from fastapi import FastAPI, UploadFile, BackgroundTasks, HTTPException, Response
 from fastapi.responses import FileResponse
 
 testing = bool(os.getenv("TESTING", False))
@@ -25,14 +25,20 @@ MIME_TYPES = {
 }
 
 class DocConversionTask:
-    def __init__(self, doc_type: Literal['docx', 'pdf'], temp_dir_name: str, env: dict[str, str] | None ):
+    def __init__(self, doc_type: Literal['docx', 'pdf'], temp_dir_name: str,
+                 env: dict[str, str] | None, health_check = False):
         self.doc_type = doc_type
         self.temp_dir_name = temp_dir_name
         self.env = env
+        self.health_check = health_check
         self.future = asyncio.get_running_loop().create_future()
         self.wait_start_time = time.monotonic()
 
     async def convert(self):
+        if self.health_check:
+            self.future.set_result("")
+            return
+
         output_file_name = f"{OUTPUT_FILE_NAME_BASE}.{self.doc_type}"
 
         if self.doc_type == "pdf":
@@ -159,3 +165,12 @@ async def convert_markdown_file(request_file: UploadFile, doc_type: Literal['doc
     return FileResponse(Path(temp_dir_name) / output_file_name,
                         media_type=MIME_TYPES[doc_type],
                         filename = f"output.{doc_type}")
+
+
+@app.get("/healthz")
+async def health_check():
+    health_check_task = DocConversionTask("docx", "", None, True)
+    await queue.put(health_check_task) # finishes when task is inserted into queue
+    await health_check_task.future # finishes when task convert method is called
+
+    return Response(status_code=200, content="OK")
