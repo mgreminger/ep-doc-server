@@ -25,20 +25,14 @@ MIME_TYPES = {
 }
 
 class DocConversionTask:
-    def __init__(self, doc_type: Literal['docx', 'pdf'], temp_dir_name: str,
-                 env: dict[str, str] | None, health_check = False):
+    def __init__(self, doc_type: Literal['docx', 'pdf'], temp_dir_name: str, env: dict[str, str] | None):
         self.doc_type = doc_type
         self.temp_dir_name = temp_dir_name
         self.env = env
-        self.health_check = health_check
         self.future = asyncio.get_running_loop().create_future()
         self.wait_start_time = time.monotonic()
 
     async def convert(self):
-        if self.health_check:
-            self.future.set_result("")
-            return
-
         output_file_name = f"{OUTPUT_FILE_NAME_BASE}.{self.doc_type}"
 
         if self.doc_type == "pdf":
@@ -95,11 +89,13 @@ async def worker(queue: asyncio.Queue[DocConversionTask]):
 # global task queue
 queue: asyncio.Queue[DocConversionTask] = asyncio.Queue()
 
+
+tasks = []
+
 # setup and cleanup task queue on startup and shutdown
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # define task pool
-    tasks = []
     for i in range(MAX_CONCURRENT_PANDOC_RUNS):
         tasks.append(asyncio.create_task(worker(queue)))
 
@@ -169,8 +165,7 @@ async def convert_markdown_file(request_file: UploadFile, doc_type: Literal['doc
 
 @app.get("/healthz")
 async def health_check():
-    health_check_task = DocConversionTask("docx", "", None, True)
-    await queue.put(health_check_task) # finishes when task is inserted into queue
-    await health_check_task.future # finishes when task convert method is called
-
-    return Response(status_code=200, content="OK")
+    if all([not task.done() for task in tasks]):
+        return Response(status_code=200, content="All tasks are currently running")
+    else:
+        return Response(status_code=503, content="Some tasks are no longer active")
