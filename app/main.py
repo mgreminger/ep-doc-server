@@ -13,7 +13,7 @@ from fastapi.responses import FileResponse
 
 testing = bool(os.getenv("TESTING", False))
 
-SUBPROCESS_TIMEOUT = 40 # seconds
+SUBPROCESS_TIMEOUT = 60 # seconds
 MAX_QUEUE_WAIT_TIME = 30 # max time to wait in queue before bailing, prevents case where queue gets so long that no requests finish before browser timeout
 MAX_INPUT_SIZE = 5000000 # bytes
 MAX_CONCURRENT_PANDOC_RUNS = 2
