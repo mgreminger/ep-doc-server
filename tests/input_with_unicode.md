@@ -12,7 +12,6 @@ Source: Norton, R. L. "[Machine design. A integrated approach, 5th Editi.](https
 
 # Select Beam Section
 
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Moment_of_area_of_a_rectangle_through_the_centroid.svg/230px-Moment_of_area_of_a_rectangle_through_the_centroid.svg.png)
 
 $$ \text{Rectangle} \quad  \begin{cases} I_{x} & = \quad \frac{b\cdot h^{3}}{12}  \\ c & = \quad \frac{h}{2}  \\ r & = \quad  \left[mm\right] \\ r_{1} & = \quad  \left[mm\right] \\ r_{2} & = \quad  \left[mm\right] \\ a & = \quad  \left[mm\right] \\ b & = \quad 50 \left[mm\right] \\ h & = \quad 75 \left[mm\right] \\ b_{1} & = \quad  \left[mm\right] \\ h_{1} & = \quad  \left[mm\right] \end{cases} $$ 
 
