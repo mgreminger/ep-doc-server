@@ -146,6 +146,7 @@ async def convert_markdown_file(request_file: UploadFile, doc_type: Literal['doc
 
         with open(Path(temp_dir_name) / MD_FILE_NAME, 'wb') as md_input_file:
             await asyncio.to_thread(shutil.copyfileobj, request_file.file, md_input_file)
+            md_input_file.write(("Created with [EngineeringPaper.xyz](https://engineeringpaper.xyz)\n\n").encode('utf-8'))
         
         # add to task queue
         doc_conversion_task = DocConversionTask(doc_type, temp_dir_name, env)
