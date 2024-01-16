@@ -1,2 +1,2 @@
 # ep-doc-server
-Server endpoint for EngineeringPaper.xyz for converting markdown files to document files
+Fastapi endpoint used by EngineeringPaper.xyz for converting markdown files to document files using Pandoc 
