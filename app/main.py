@@ -64,12 +64,16 @@ class DocConversionTask:
                     pass
                 
                 if self.doc_type == "pdf":
-                    raise HTTPException(status_code=500, detail="Document creation timeout, consider creating a .docx file instead of a .pdf file or reducing the number of images or plots")
+                    raise HTTPException(status_code=500, detail="Document creation timeout, consider generating a .docx file instead of a .pdf file or reducing the number of images or plots")
                 else:
                     raise HTTPException(status_code=500, detail="Document Creation Timeout")
 
             if proc.returncode != 0:
-                raise HTTPException(status_code=500, detail=stderr.decode())
+                if self.doc_type == "pdf":
+                    raise HTTPException(status_code=500, detail="Error generating a PDF, consider generating a .docx file instead since the .pdf generation process can have errors with certain image types or certain fonts.<br><br>" 
+                                                                + "Pandoc process error: " + stderr.decode())
+                else:    
+                    raise HTTPException(status_code=500, detail=stderr.decode())
             
             # make sure output file exists
             if not os.path.isfile(Path(self.temp_dir_name) / output_file_name):
