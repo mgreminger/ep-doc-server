@@ -1,0 +1,146 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{}
+
+\begin{document}
+
+\hypertarget{database-consistency-test}{%
+\section{Database Consistency Test}\label{database-consistency-test}}
+
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+This EngineeringPaper.xyz sheet shows how to calculated the maximum
+stress and displacement for a cantilever beam loaded by a vertical force
+at its end. The geometry of the beam is shown in the figure below. The
+beam has a rectangular cross section with height h and width b. The
+maximum stress in a cantilever with length much larger than its height
+is due to bending stress that occurs at the base of the beam. For a
+downward force, the maximum stress will be a tensile force at the top of
+the beam and a compressive stress at the bottom of the beam. For beam
+sections that are symmetric top to bottom, the maximum tensile and
+compressive stresses will have equal magnitude. \# \# \# Select Beam
+Material
+
+\hypertarget{select-beam-section}{%
+\section{Select Beam Section}\label{select-beam-section}}
+
+Source for beam section equations and images:
+\url{https://en.wikipedia.org/wiki/List_of_second_moments_of_area}
+
+\hypertarget{define-the-other-beam-parameters}{%
+\section{Define the Other Beam
+Parameters}\label{define-the-other-beam-parameters}}
+
+\[ l=500\left[mm\right]   \]
+
+\[ F=500\left[N\right]   \]
+
+\hypertarget{define-the-deflection-and-stress-equations}{%
+\section{Define the Deflection and Stress
+Equations}\label{define-the-deflection-and-stress-equations}}
+
+The maximum displacement of a cantilever beam loaded at its end is
+defined by {[}1{]}:
+
+\[ y_{max}=-\frac{F\cdot l^{3}}{3\cdot E\cdot I_{x}}   \]
+
+where Ix is the area moment of inertia of the cross section about the
+x-axis as selected in the table above. The maximum displacement can now
+be queried:
+
+\[\boxed{ y_{max}=\left[mm\right] =-0.165297794307557 \left[mm\right]  }\]
+
+The maximum bending stress in a beam section is given by:
+
+\[ \sigma_{max}=\frac{M\cdot c}{I_{x}}   \]
+
+where M is the bending moment at the section of interest and c is
+distance from the neutral axis of the beam to the top or bottom of the
+beam. The maximum moment occurs at the base of the beam and is defined
+by:
+
+\[ M=l\cdot F   \]
+
+where l is the length of the beam. Now that everything is defined, the
+maximum stress can be queried and converted to {[}MPa{]} units:
+
+\[\boxed{ \sigma_{max}=\left[MPa\right] =5.33333333333333 \left[MPa\right]  }\]
+
+These results can be compared to the results obtained from a finite
+element analysis using SolidWorks. The beam has the same dimensions,
+loading, and material as the rectangular cross-section and the aluminum
+table options above. The displacement plot is shown below. The maximum
+displacement magnitude obtained using finite element analysis is .175
+{[}mm{]}, which is close to the .165 {[}mm{]} obtained using the
+equations above.
+
+Similarly, the maximum stress calculation can be compared to the
+SolidWorks results. The maximum stress obtained from SolidWorks is 6.5
+{[}MPa{]} as shown below. Note that this is higher than the 5.3
+{[}MPa{]} obtained using the beam equation. This is the result of the
+stress concentration that occurs at the based of the cantilever where it
+meets the fixed boundary condition. A littler further from the fixed
+boundary condition, the finite element values are close to the
+calculated values.
+
+{[}1{]} Norton, R. L.
+``\href{https://www.pearson.com/us/higher-education/program/Norton-Machine-Design-5th-Edition/PGM275676.html}{Machine
+design. A integrated approach, 5th Editi.}'' (2013).
+
+\[ y=\frac{F}{6\cdot E\cdot I_{x}}\cdot\left(x^{3}-3\cdot l\cdot x^{2}\right)   \]
+
+Created with \href{https://engineeringpaper.xyz}{EngineeringPaper.xyz}
+
+\end{document}
