@@ -21,11 +21,12 @@ MD_FILE_NAME = "input.md"
 OUTPUT_FILE_NAME_BASE = "output"
 MIME_TYPES = {
     "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "pdf": "application/pdf"
+    "pdf": "application/pdf",
+    "tex": "application/x-tex"
 }
 
 class DocConversionTask:
-    def __init__(self, doc_type: Literal['docx', 'pdf'], temp_dir_name: str, env: dict[str, str] | None):
+    def __init__(self, doc_type: Literal['docx', 'pdf', 'tex'], temp_dir_name: str, env: dict[str, str] | None):
         self.doc_type = doc_type
         self.temp_dir_name = temp_dir_name
         self.env = env
@@ -35,14 +36,17 @@ class DocConversionTask:
     async def convert(self):
         output_file_name = f"{OUTPUT_FILE_NAME_BASE}.{self.doc_type}"
 
-        if self.doc_type == "pdf":
-            cmd = f"pandoc --from markdown --to pdf --standalone --embed-resources --no-highlight \
-                    -V 'mainfont:DejaVuSerif' \
-                    -V 'sansfont:DejaVuSans' \
-                    -V 'monofont:DejaVuSansMono' \
-                    --pdf-engine=lualatex {MD_FILE_NAME} -o {output_file_name}"
-        else:
-            cmd = f"pandoc --from markdown --to {self.doc_type} --standalone --embed-resources --no-highlight {MD_FILE_NAME} -o {output_file_name}"
+        match self.doc_type:
+            case "pdf":
+                cmd = f"pandoc --from markdown --to pdf --standalone --embed-resources --no-highlight \
+                        -V 'mainfont:DejaVuSerif' \
+                        -V 'sansfont:DejaVuSans' \
+                        -V 'monofont:DejaVuSansMono' \
+                        --pdf-engine=lualatex {MD_FILE_NAME} -o {output_file_name}"
+            case "tex":
+                cmd = f"pandoc --from markdown --to latex --standalone --embed-resources --no-highlight {MD_FILE_NAME} -o {output_file_name}"
+            case _:
+                cmd = f"pandoc --from markdown --to {self.doc_type} --standalone --embed-resources --no-highlight {MD_FILE_NAME} -o {output_file_name}"
             
         try:
             if (time.monotonic() - self.wait_start_time) > MAX_QUEUE_WAIT_TIME:
@@ -122,7 +126,7 @@ async def delete_temp_directory(temp_dir_name):
 
 
 @app.post("/docgen/{doc_type}")
-async def convert_markdown_file(request_file: UploadFile, doc_type: Literal['docx', 'pdf'],
+async def convert_markdown_file(request_file: UploadFile, doc_type: Literal['docx', 'pdf', 'tex'],
                                 background_tasks: BackgroundTasks):
     temp_dir_name = None
 
