@@ -1,4 +1,4 @@
-FROM pandoc/latex
+FROM pandoc/latex:3.1.1
  
 ARG ENVIRONMENT=production
 
