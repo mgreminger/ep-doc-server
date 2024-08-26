@@ -1,4 +1,4 @@
-FROM pandoc/latex:3.1.1
+FROM pandoc/latex:3.3.0
  
 ARG ENVIRONMENT=production
 
@@ -9,6 +9,9 @@ WORKDIR /code
  
 COPY ./requirements.txt /code/requirements.txt
 COPY ./requirements-dev.txt /code/requirements-dev.txt
+
+RUN python3 -m venv /venv
+ENV PATH=/venv/bin:$PATH
 
 RUN if [ "$ENVIRONMENT" = "production" ]; then \
         pip install --no-cache-dir --upgrade -r /code/requirements.txt \
