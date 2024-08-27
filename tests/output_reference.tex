@@ -40,10 +40,7 @@
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
-\ifLuaTeX
-  \usepackage{selnolig}  % disable illegal ligatures
-\fi
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\usepackage{bookmark}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
@@ -55,11 +52,9 @@
 
 \begin{document}
 
-\hypertarget{database-consistency-test}{%
-\section{Database Consistency Test}\label{database-consistency-test}}
+\section{Database Consistency Test}\label{database-consistency-test}
 
-\hypertarget{introduction}{%
-\section{Introduction}\label{introduction}}
+\section{Introduction}\label{introduction}
 
 This EngineeringPaper.xyz sheet shows how to calculated the maximum
 stress and displacement for a cantilever beam loaded by a vertical force
@@ -73,23 +68,20 @@ sections that are symmetric top to bottom, the maximum tensile and
 compressive stresses will have equal magnitude. \# \# \# Select Beam
 Material
 
-\hypertarget{select-beam-section}{%
-\section{Select Beam Section}\label{select-beam-section}}
+\section{Select Beam Section}\label{select-beam-section}
 
 Source for beam section equations and images:
 \url{https://en.wikipedia.org/wiki/List_of_second_moments_of_area}
 
-\hypertarget{define-the-other-beam-parameters}{%
 \section{Define the Other Beam
-Parameters}\label{define-the-other-beam-parameters}}
+Parameters}\label{define-the-other-beam-parameters}
 
 \[ l=500\left[mm\right]   \]
 
 \[ F=500\left[N\right]   \]
 
-\hypertarget{define-the-deflection-and-stress-equations}{%
 \section{Define the Deflection and Stress
-Equations}\label{define-the-deflection-and-stress-equations}}
+Equations}\label{define-the-deflection-and-stress-equations}
 
 The maximum displacement of a cantilever beam loaded at its end is
 defined by {[}1{]}:
