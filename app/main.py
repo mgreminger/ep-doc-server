@@ -68,9 +68,9 @@ class DocConversionTask:
                     pass
                 
                 if self.doc_type == "pdf":
-                    raise HTTPException(status_code=500, detail="Document creation timeout, consider generating a .docx file instead of a .pdf file or reducing the number of images or plots")
+                    raise HTTPException(status_code=504, detail="Document creation timeout, trying again may work or consider generating a .docx file instead of a .pdf file or reducing the number of images or plots")
                 else:
-                    raise HTTPException(status_code=500, detail="Document Creation Timeout")
+                    raise HTTPException(status_code=504, detail="Document Creation Timeout")
 
             if proc.returncode != 0:
                 if self.doc_type == "pdf":
