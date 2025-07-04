@@ -39,10 +39,7 @@ class DocConversionTask:
         match self.doc_type:
             case "pdf":
                 cmd = f"pandoc --from markdown --to pdf --standalone --embed-resources --no-highlight \
-                        -V 'mainfont:DejaVuSerif' \
-                        -V 'sansfont:DejaVuSans' \
-                        -V 'monofont:DejaVuSansMono' \
-                        --pdf-engine=lualatex {MD_FILE_NAME} -o {output_file_name}"
+                        --pdf-engine=typst {MD_FILE_NAME} -o {output_file_name}"
             case "tex":
                 cmd = f"pandoc --from markdown --to latex --standalone --embed-resources --no-highlight {MD_FILE_NAME} -o {output_file_name}"
             case _:
