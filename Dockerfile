@@ -3,7 +3,7 @@ FROM pandoc/typst:3.7.0
 ARG ENVIRONMENT=production
 
 RUN apk add --no-cache python3 py3-pip
-RUN apk add --no-cache font-unifont ttf-dejavu fontconfig \
+RUN apk add --no-cache font-noto-cjk font-noto-all font-noto-emoji ttf-dejavu fontconfig \
     && fc-cache -f
 
 WORKDIR /code
