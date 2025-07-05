@@ -1,22 +1,9 @@
-FROM pandoc/typst:3.7.0.2-ubuntu
+FROM pandoc/typst:3.7.0
  
 ARG ENVIRONMENT=production
 
-# Install Python 3 and pip
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        python3 \
-        python3-pip \
-        python3-venv
-
-# Install fonts: Libertinus, Unifont, NewCMMath Book
-RUN apt-get install -y --no-install-recommends \
-        fonts-unifont \
-        texlive-fonts-recommended \
-        texlive-fonts-extra \
-        fontconfig && \
-    fc-cache -f && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache python3 py3-pip
+RUN apk add --no-cache ttf-dejavu
 
 WORKDIR /code
  
