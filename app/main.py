@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, cast
 
 import tempfile
 import asyncio
@@ -26,8 +26,9 @@ MIME_TYPES = {
 }
 
 class DocConversionTask:
-    def __init__(self, doc_type: Literal['docx', 'pdf', 'tex'], temp_dir_name: str, env: dict[str, str] | None):
+    def __init__(self, doc_type: Literal['docx', 'pdf', 'tex'], paper_size: Literal['letter', 'a4'], temp_dir_name: str, env: dict[str, str] | None):
         self.doc_type = doc_type
+        self.paper_size: Literal['letter', 'a4'] = paper_size
         self.temp_dir_name = temp_dir_name
         self.env = env
         self.future = asyncio.get_running_loop().create_future()
@@ -38,12 +39,26 @@ class DocConversionTask:
 
         match self.doc_type:
             case "pdf":
+                paper_size_variable = "us-letter" if self.paper_size == "letter" else "a4"
                 cmd = f"pandoc --from markdown --to pdf --standalone --embed-resources --no-highlight \
-                        --pdf-engine=typst {MD_FILE_NAME} -o {output_file_name}"
+                        --pdf-engine=typst {MD_FILE_NAME} \
+                        -V papersize={paper_size_variable} \
+                        -o {output_file_name}"
             case "tex":
-                cmd = f"pandoc --from markdown --to latex --standalone --embed-resources --no-highlight {MD_FILE_NAME} -o {output_file_name}"
+                cmd = f"pandoc --from markdown --to latex --standalone --embed-resources --no-highlight \
+                       -V papersize={self.paper_size} \
+                       {MD_FILE_NAME} -o {output_file_name}"
+            case "docx":
+                if self.paper_size == "letter":
+                    reference_doc = "/code/app/reference_docs/reference_letter.docx"
+                else:
+                    reference_doc = "/code/app/reference_docs/reference_a4.docx"
+
+                cmd = f"pandoc --from markdown --to {self.doc_type} --standalone --embed-resources --no-highlight \
+                        --reference-doc={reference_doc} \
+                        {MD_FILE_NAME} -o {output_file_name}"
             case _:
-                cmd = f"pandoc --from markdown --to {self.doc_type} --standalone --embed-resources --no-highlight {MD_FILE_NAME} -o {output_file_name}"
+                raise HTTPException(status_code=405, detail="Unsupported document type")
             
         try:
             if (time.monotonic() - self.wait_start_time) > MAX_QUEUE_WAIT_TIME:
@@ -122,9 +137,16 @@ async def delete_temp_directory(temp_dir_name):
     await asyncio.to_thread(shutil.rmtree, temp_dir_name, ignore_errors=True)
 
 
-@app.post("/docgen/{doc_type}")
-async def convert_markdown_file(request_file: UploadFile, doc_type: Literal['docx', 'pdf', 'tex'],
+@app.post("/docgen/{raw_doc_type}")
+async def convert_markdown_file(request_file: UploadFile, raw_doc_type: Literal['docx', 'docx_a4', 'pdf', 'pdf_a4', 'tex', 'tex_a4'],
                                 background_tasks: BackgroundTasks):
+    if raw_doc_type.endswith('_a4'):
+        paper_size = 'a4'
+    else:
+        paper_size = 'letter'
+    
+    doc_type = cast(Literal['docx', 'pdf', 'tex'], raw_doc_type.removesuffix('_a4'))
+
     temp_dir_name = None
 
     try:
@@ -154,7 +176,7 @@ async def convert_markdown_file(request_file: UploadFile, doc_type: Literal['doc
             md_input_file.write(("Created with [EngineeringPaper.xyz](https://engineeringpaper.xyz)\n\n").encode('utf-8'))
         
         # add to task queue
-        doc_conversion_task = DocConversionTask(doc_type, temp_dir_name, env)
+        doc_conversion_task = DocConversionTask(doc_type, paper_size, temp_dir_name, env)
         await queue.put(doc_conversion_task) # finishes when task is inserted into queue
         output_file_name = await doc_conversion_task.future # finishes when doc conversion is completed or raises
 
