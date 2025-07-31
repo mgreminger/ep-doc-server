@@ -15,7 +15,7 @@ testing = bool(os.getenv("TESTING", False))
 
 SUBPROCESS_TIMEOUT = 60 # seconds
 MAX_QUEUE_WAIT_TIME = 30 # max time to wait in queue before bailing, prevents case where queue gets so long that no requests finish before browser timeout
-MAX_INPUT_SIZE = 5000000 # bytes
+MAX_INPUT_SIZE = 10000000 # bytes
 MAX_CONCURRENT_PANDOC_RUNS = 2
 MD_FILE_NAME = "input.md"
 OUTPUT_FILE_NAME_BASE = "output"
