@@ -15,7 +15,7 @@ testing = bool(os.getenv("TESTING", False))
 
 SUBPROCESS_TIMEOUT = 60 # seconds
 MAX_QUEUE_WAIT_TIME = 30 # max time to wait in queue before bailing, prevents case where queue gets so long that no requests finish before browser timeout
-MAX_INPUT_SIZE = 5000000 # bytes
+MAX_INPUT_SIZE = 10000000 # bytes
 MAX_CONCURRENT_PANDOC_RUNS = 2
 MD_FILE_NAME = "input.md"
 OUTPUT_FILE_NAME_BASE = "output"
@@ -86,7 +86,7 @@ class DocConversionTask:
 
             if proc.returncode != 0:
                 if self.doc_type == "pdf":
-                    raise HTTPException(status_code=500, detail="Error generating a PDF, consider generating a .docx file instead since the .pdf generation process can have errors with certain image types or certain fonts.<br><br>" 
+                    raise HTTPException(status_code=500, detail="Error generating PDF file. Image links are known to cause errors when generating .pdf documents. Replace image links with images inserted as files. If errors persist, consider exporting as a .docx file instead.<br><br>" 
                                                                 + "Pandoc process error: " + stderr.decode())
                 else:    
                     raise HTTPException(status_code=500, detail=stderr.decode())
