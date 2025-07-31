@@ -86,7 +86,7 @@ class DocConversionTask:
 
             if proc.returncode != 0:
                 if self.doc_type == "pdf":
-                    raise HTTPException(status_code=500, detail="Error generating a PDF, consider generating a .docx file instead since the .pdf generation process can have errors with certain image types or certain fonts.<br><br>" 
+                    raise HTTPException(status_code=500, detail="Error generating PDF file. Image links are know to cause errors when generating .pdf documents. Replace image links with images inserted as files. If errors persist, consider exporting as a .docx file instead.<br><br>" 
                                                                 + "Pandoc process error: " + stderr.decode())
                 else:    
                     raise HTTPException(status_code=500, detail=stderr.decode())
