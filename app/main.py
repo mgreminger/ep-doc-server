@@ -40,12 +40,12 @@ class DocConversionTask:
         match self.doc_type:
             case "pdf":
                 paper_size_variable = "us-letter" if self.paper_size == "letter" else "a4"
-                cmd = f"pandoc --from markdown --to pdf --standalone --embed-resources --no-highlight \
+                cmd = f"pandoc --from markdown-implicit_figures --to pdf --standalone --embed-resources --no-highlight \
                         --pdf-engine=typst {MD_FILE_NAME} \
                         -V papersize={paper_size_variable} \
                         -o {output_file_name}"
             case "tex":
-                cmd = f"pandoc --from markdown --to latex --standalone --embed-resources --no-highlight \
+                cmd = f"pandoc --from markdown-implicit_figures --to latex --standalone --embed-resources --no-highlight \
                        -V papersize={self.paper_size} \
                        {MD_FILE_NAME} -o {output_file_name}"
             case "docx":
@@ -54,7 +54,7 @@ class DocConversionTask:
                 else:
                     reference_doc = "/code/app/reference_docs/reference_a4.docx"
 
-                cmd = f"pandoc --from markdown --to {self.doc_type} --standalone --embed-resources --no-highlight \
+                cmd = f"pandoc --from markdown-implicit_figures --to {self.doc_type} --standalone --embed-resources --no-highlight \
                         --reference-doc={reference_doc} \
                         {MD_FILE_NAME} -o {output_file_name}"
             case _:
