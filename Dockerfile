@@ -1,4 +1,4 @@
-FROM pandoc/typst:3.7.0
+FROM pandoc/typst:3.9.0.2
  
 ARG ENVIRONMENT=production
 

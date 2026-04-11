@@ -47,6 +47,17 @@
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
 
+\ifXeTeX
+\special{pdf:trailerid [ <9c1a22d1ea1fe0f931f079957a96b19d> <9c1a22d1ea1fe0f931f079957a96b19d> ]}
+\fi
+\ifPDFTeX
+\pdftrailerid{}
+\pdftrailer{/ID [ <9c1a22d1ea1fe0f931f079957a96b19d> <9c1a22d1ea1fe0f931f079957a96b19d> ]}
+\fi
+\ifLuaTeX
+\pdfvariable trailerid {[ <9c1a22d1ea1fe0f931f079957a96b19d> <9c1a22d1ea1fe0f931f079957a96b19d> ]}
+\fi
+
 \author{}
 \date{}
 
