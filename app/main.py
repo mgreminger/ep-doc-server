@@ -36,16 +36,19 @@ class DocConversionTask:
 
     async def convert(self):
         output_file_name = f"{OUTPUT_FILE_NAME_BASE}.{self.doc_type}"
+        filter_path = "/code/app/filters/text_color.lua"
 
         match self.doc_type:
             case "pdf":
                 paper_size_variable = "us-letter" if self.paper_size == "letter" else "a4"
                 cmd = f"pandoc --from markdown-implicit_figures --to pdf --standalone --embed-resources --no-highlight \
+                        --lua-filter={filter_path} \
                         --pdf-engine=typst {MD_FILE_NAME} \
                         -V papersize={paper_size_variable} \
                         -o {output_file_name}"
             case "tex":
                 cmd = f"pandoc --from markdown-implicit_figures --to latex --standalone --embed-resources --no-highlight \
+                       --lua-filter={filter_path} \
                        -V papersize={self.paper_size} \
                        {MD_FILE_NAME} -o {output_file_name}"
             case "docx":
@@ -55,6 +58,7 @@ class DocConversionTask:
                     reference_doc = "/code/app/reference_docs/reference_a4.docx"
 
                 cmd = f"pandoc --from markdown-implicit_figures --to {self.doc_type} --standalone --embed-resources --no-highlight \
+                        --lua-filter={filter_path} \
                         --reference-doc={reference_doc} \
                         {MD_FILE_NAME} -o {output_file_name}"
             case _:
