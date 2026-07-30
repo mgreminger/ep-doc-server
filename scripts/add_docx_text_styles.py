@@ -15,7 +15,7 @@ from docx.oxml.ns import qn
 
 # Handle command-line arguments
 if len(sys.argv) != 2:
-    print("Usage: uvx run update_quill_styles.py <path_to_reference.docx>")
+    print("Usage: uv run update_quill_styles.py <path_to_reference.docx>")
     sys.exit(1)
 
 file_path = sys.argv[1]
@@ -60,6 +60,7 @@ for text_hex in quill_colors:
     if color_style_name not in styles:
         color_style = styles.add_style(color_style_name, WD_STYLE_TYPE.CHARACTER)
         color_style.font.color.rgb = hex_to_rgb(text_hex)
+        color_style.hidden = True
 
     for bg_hex in quill_colors:
         # Background-only style (e.g., BgFFFF00)
@@ -67,6 +68,7 @@ for text_hex in quill_colors:
         if bg_style_name not in styles:
             bg_style = styles.add_style(bg_style_name, WD_STYLE_TYPE.CHARACTER)
             add_shading_to_style(bg_style, bg_hex)
+            bg_style.hidden = True
 
         # Combined style (e.g., ColorE60000BgFFFF00)
         combo_style_name = f"Color{text_hex}Bg{bg_hex}"
@@ -74,6 +76,7 @@ for text_hex in quill_colors:
             combo_style = styles.add_style(combo_style_name, WD_STYLE_TYPE.CHARACTER)
             combo_style.font.color.rgb = hex_to_rgb(text_hex)
             add_shading_to_style(combo_style, bg_hex)
+            combo_style.hidden = True
 
 final_style_count = len(styles)
 added_styles = final_style_count - initial_style_count
