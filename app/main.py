@@ -36,7 +36,7 @@ class DocConversionTask:
 
     async def convert(self):
         output_file_name = f"{OUTPUT_FILE_NAME_BASE}.{self.doc_type}"
-        filter_path = "/code/app/filters/text_color.lua"
+        filter_path = "/code/app/filters/doc_filters.lua"
 
         match self.doc_type:
             case "pdf":
