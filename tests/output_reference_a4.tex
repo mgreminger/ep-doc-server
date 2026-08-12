@@ -37,6 +37,17 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
+\usepackage{longtable,booktabs,array}
+\newcounter{none} % for unnumbered tables
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
@@ -48,14 +59,14 @@
   pdfcreator={LaTeX via pandoc}}
 
 \ifXeTeX
-\special{pdf:trailerid [ <2bde66321771adeef77e913c4aef2fbc> <2bde66321771adeef77e913c4aef2fbc> ]}
+\special{pdf:trailerid [ <a1ce553c4a652a19f7c551f54472672d> <a1ce553c4a652a19f7c551f54472672d> ]}
 \fi
 \ifPDFTeX
 \pdftrailerid{}
-\pdftrailer{/ID [ <2bde66321771adeef77e913c4aef2fbc> <2bde66321771adeef77e913c4aef2fbc> ]}
+\pdftrailer{/ID [ <a1ce553c4a652a19f7c551f54472672d> <a1ce553c4a652a19f7c551f54472672d> ]}
 \fi
 \ifLuaTeX
-\pdfvariable trailerid {[ <2bde66321771adeef77e913c4aef2fbc> <2bde66321771adeef77e913c4aef2fbc> ]}
+\pdfvariable trailerid {[ <a1ce553c4a652a19f7c551f54472672d> <a1ce553c4a652a19f7c551f54472672d> ]}
 \fi
 
 \author{}
@@ -228,6 +239,198 @@ one
 and highlight and bold and italics}}}}}
 
 no text formatting
+
+\section{MD Export Test (centered equations
+unchecked)}\label{md-export-test-centered-equations-unchecked}
+
+\(x=20\left\lbrack m\right\rbrack\)
+
+Documentation cell with line of text followed by a scaled image:
+
+Sentence with formula \(\sqrt{\Omega}\) in the middle, followed by
+equation on its own line:
+
+\(E=\frac{My}{I}\)
+
+With text after.
+
+Line of text.
+
+Another line of text.
+
+\(\text{Option 2} \quad  \begin{cases} l_1 & = \quad 3 \left\lbrack mm\right\rbrack \\ l_2 & = \quad 4  \end{cases}\)
+
+\(l_2= 4\)
+
+\(l_1=\left\lbrack m\right\rbrack =0.003 \left\lbrack m\right\rbrack\)
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}ll@{}}
+\toprule\noalign{}
+\(Col1\) & \(Col2\) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+& \(\left\lbrack m\right\rbrack\) \\
+6 & 7 \\
+8 & 9 \\
+\end{longtable}
+}
+
+\(y = \begin{cases} 10 &: \quad x>20 \\ 2 &: \quad \text{otherwise} \end{cases}\)
+
+\(\text{System} = \begin{cases} 1\cdot s+2\cdot t=10 &  \\ 2\cdot s-4\cdot t^2=20 &  \end{cases}\)
+
+\(\text{Solution} = \begin{cases} s & = \quad 12 \\ t & = \quad -1 \end{cases}\)
+
+\(\text{Roller Thrust Bearing} \quad \mu_{c} = 0.01\)
+
+This left justified, below is a centered equation:
+
+\begin{center}
+
+\(x=2\cdot y\)
+
+\end{center}
+
+Below is a centered image:
+
+\begin{center}
+
+\end{center}
+
+\begin{flushright}
+
+This is right justified
+
+\end{flushright}
+
+This is justified text
+
+\begin{itemize}
+\tightlist
+\item
+  red
+\item
+  blue
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  one
+\item
+  two
+
+  \begin{enumerate}
+  \def\labelenumii{\alph{enumii}.}
+  \tightlist
+  \item
+    three
+  \item
+    four
+  \end{enumerate}
+\end{enumerate}
+
+Normal text
+
+\section{MD Export Test (centered equations
+checked)}\label{md-export-test-centered-equations-checked}
+
+\[ x=20\left\lbrack m\right\rbrack   \]
+
+Documentation cell with line of text followed by a scaled image:
+
+Sentence with formula \(\sqrt{\Omega}\) in the middle, followed by
+equation on its own line:
+
+\(E=\frac{My}{I}\)
+
+With text after.
+
+Line of text.
+
+Another line of text.
+
+\[ \text{Option 2} \quad  \begin{cases} l_1 & = \quad 3 \left\lbrack mm\right\rbrack \\ l_2 & = \quad 4  \end{cases} \]
+
+\[ l_2= 4   \]
+
+\[ l_1=\left\lbrack m\right\rbrack =0.003 \left\lbrack m\right\rbrack  \]
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}ll@{}}
+\toprule\noalign{}
+\(Col1\) & \(Col2\) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+& \(\left\lbrack m\right\rbrack\) \\
+6 & 7 \\
+8 & 9 \\
+\end{longtable}
+}
+
+\[ y = \begin{cases} 10 &: \quad x>20 \\ 2 &: \quad \text{otherwise} \end{cases} \]
+
+\[ \text{System} = \begin{cases} 1\cdot s+2\cdot t=10 &  \\ 2\cdot s-4\cdot t^2=20 &  \end{cases} \]
+
+\[ \text{Solution} = \begin{cases} s & = \quad 12 \\ t & = \quad -1 \end{cases} \]
+
+\[ \text{Roller Thrust Bearing} \quad \mu_{c} = 0.01 \]
+
+This left justified, below is a centered equation:
+
+\begin{center}
+
+\(x=2\cdot y\)
+
+\end{center}
+
+Below is a centered image:
+
+\begin{center}
+
+\end{center}
+
+\begin{flushright}
+
+This is right justified
+
+\end{flushright}
+
+This is justified text
+
+\begin{itemize}
+\tightlist
+\item
+  red
+\item
+  blue
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  one
+\item
+  two
+
+  \begin{enumerate}
+  \def\labelenumii{\alph{enumii}.}
+  \tightlist
+  \item
+    three
+  \item
+    four
+  \end{enumerate}
+\end{enumerate}
+
+Normal text
 
 Created with \href{https://engineeringpaper.xyz}{EngineeringPaper.xyz}
 
