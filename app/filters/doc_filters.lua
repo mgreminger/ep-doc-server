@@ -111,3 +111,17 @@ function Div(el)
     return el
   end
 end
+
+-- ==========================================
+-- 3. GLOBAL DOCUMENT SETUP (For Hyperlinks)
+-- ==========================================
+function Pandoc(doc)
+  if FORMAT:match 'typst' or FORMAT:match 'pdf' then
+    -- Make links blue and underlined by default. 
+    -- Custom colors nested inside the links will natively override the blue fill!
+    local typst_setup = pandoc.RawBlock('typst', '#show link: set text(fill: rgb("#0066CC"))\n#show link: underline')
+    table.insert(doc.blocks, 1, typst_setup)
+  end
+  
+  return doc
+end
