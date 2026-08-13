@@ -59,14 +59,14 @@
   pdfcreator={LaTeX via pandoc}}
 
 \ifXeTeX
-\special{pdf:trailerid [ <a1ce553c4a652a19f7c551f54472672d> <a1ce553c4a652a19f7c551f54472672d> ]}
+\special{pdf:trailerid [ <39d771f0c05dd7c18a69b6fd22b3ddec> <39d771f0c05dd7c18a69b6fd22b3ddec> ]}
 \fi
 \ifPDFTeX
 \pdftrailerid{}
-\pdftrailer{/ID [ <a1ce553c4a652a19f7c551f54472672d> <a1ce553c4a652a19f7c551f54472672d> ]}
+\pdftrailer{/ID [ <39d771f0c05dd7c18a69b6fd22b3ddec> <39d771f0c05dd7c18a69b6fd22b3ddec> ]}
 \fi
 \ifLuaTeX
-\pdfvariable trailerid {[ <a1ce553c4a652a19f7c551f54472672d> <a1ce553c4a652a19f7c551f54472672d> ]}
+\pdfvariable trailerid {[ <39d771f0c05dd7c18a69b6fd22b3ddec> <39d771f0c05dd7c18a69b6fd22b3ddec> ]}
 \fi
 
 \author{}
@@ -431,6 +431,123 @@ This is justified text
 \end{enumerate}
 
 Normal text
+
+\section{Equation Comments Stress
+Test}\label{equation-comments-stress-test}
+
+cats and dogs
+
+cats and dogs
+
+@cats
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  cats
+\item
+  dogs
+
+  \begin{enumerate}
+  \def\labelenumii{\alph{enumii}.}
+  \tightlist
+  \item
+    zebras
+  \item
+    giraffes
+
+    \begin{enumerate}
+    \def\labelenumiii{\roman{enumiii}.}
+    \tightlist
+    \item
+      rats
+    \item
+      mice
+    \item
+      squirrels
+    \item
+      rabbits
+
+      \begin{enumerate}
+      \def\labelenumiv{\arabic{enumiv}.}
+      \tightlist
+      \item
+        bass
+      \item
+        walleye
+      \end{enumerate}
+    \end{enumerate}
+  \end{enumerate}
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  eagles
+\item
+  sparrows
+
+  \begin{itemize}
+  \tightlist
+  \item
+    pigeons
+  \item
+    geese
+  \end{itemize}
+\end{itemize}
+
+\(1\text{cats\{{}\}{} in the house}= 1\)
+
+\(1\text{cats\{{} in the house}= 1\)
+
+\(1\text{cats\}{} in the house}= 1\)
+
+\(2\text{dogs[] in the house}= 2\)
+
+\(2\text{dogs[ in the house}= 2\)
+
+\(2\text{dogs] in the house}= 2\)
+
+\(3\text{zebras in the house}= 3\)
+
+\(4\text{giraffes! in the house}= 4\)
+
+\(5\text{mice\%{} in the house}= 5\)
+
+\(6\text{squirrels\&{} in the house}= 6\)
+
+\(7\text{rats\textasciicircum{} in the house}= 7\)
+
+\(8\text{horses\#{} in the house}= 8\)
+
+\(9\text{cows @ in the house}= 9\)
+
+\(10\text{pigs \${} in the house}\:= 10\)
+
+\(11\text{goats * in the house}= 11\)
+
+\(12\text{rabbits() in the house}= 12\)
+
+\(12\text{rabbits) in the house}= 12\)
+
+\(12\text{rabbits( in the house}= 12\)
+
+\(13\text{sparrow -+/<>.,';:\textasciitilde{}?<>}= 13\)
+
+\(14\text{fox \_{} in the house}= 14\)
+
+\(15\text{bear\textbackslash{} in the house}= 15\)
+
+\section{Link Colors}\label{link-colors}
+
+Link test \href{https://www.cnn.com}{www.cnn.com}
+
+Link test
+\href{https://www.cnn.com}{{\textcolor[HTML]{F06666}{\colorbox[HTML]{FFFF66}{www.cnn.com}}}}
+
+{\textcolor[HTML]{66B966}{\colorbox[HTML]{FFFFCC}{Link test
+\href{https://www.cnn.com}{www.cnn.com}}}}
 
 Created with \href{https://engineeringpaper.xyz}{EngineeringPaper.xyz}
 
