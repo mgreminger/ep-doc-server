@@ -125,3 +125,41 @@ function Pandoc(doc)
   
   return doc
 end
+
+-- ==========================================
+-- 4. RAW BLOCK / INLINE PROCESSOR (For Page Breaks)
+-- ==========================================
+
+local function handle_pagebreak(el)
+  -- Check if the raw LaTeX text is a page break command
+  if el.text:match('\\newpage') or el.text:match('\\pagebreak') then
+    
+    -- For Typst / PDF
+    if FORMAT:match 'typst' or FORMAT:match 'pdf' then
+      if el.t == 'RawBlock' then
+        return pandoc.RawBlock('typst', '#pagebreak()')
+      else
+        return pandoc.RawInline('typst', '#pagebreak()')
+      end
+
+    -- For Word (DOCX)
+    elseif FORMAT:match 'docx' then
+      if el.t == 'RawBlock' then
+        return pandoc.RawBlock('openxml', '<w:p><w:r><w:br w:type="page"/></w:r></w:p>')
+      else
+        return pandoc.RawInline('openxml', '<w:r><w:br w:type="page"/></w:r>')
+      end
+    end
+    
+    -- If exporting to LaTeX/Beamer, leave the original \newpage as-is
+  end
+  return nil
+end
+
+function RawBlock(el)
+  return handle_pagebreak(el)
+end
+
+function RawInline(el)
+  return handle_pagebreak(el)
+end
