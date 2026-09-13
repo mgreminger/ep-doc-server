@@ -109,9 +109,13 @@ one
 
 [twenty five]{style="color: #b2b200;"}
 
+\newpage
+
 [twenty six]{style="color: #006100;"}
 
 [twenty seven]{style="color: #0047b2;"}
+
+\newpage
 
 [twenty eight]{style="color: #6b24b2;"}
 

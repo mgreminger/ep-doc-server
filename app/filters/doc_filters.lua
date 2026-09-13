@@ -129,7 +129,6 @@ end
 -- ==========================================
 -- 4. RAW BLOCK / INLINE PROCESSOR (For Page Breaks)
 -- ==========================================
-
 local function handle_pagebreak(el)
   -- Check if the raw LaTeX text is a page break command
   if el.text:match('\\newpage') or el.text:match('\\pagebreak') then
