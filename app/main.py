@@ -66,7 +66,7 @@ class DocConversionTask:
             
         try:
             if (time.monotonic() - self.wait_start_time) > MAX_QUEUE_WAIT_TIME:
-                raise HTTPException(status_code=503, detail="The document conversion service is currently operating at capacity, please retry later")
+                raise HTTPException(status_code=503, detail='The document conversion service is currently operating at capacity, please retry later. Consider using <a href="https://engineeringpaper.pro" target="_blank">EngineeringPaper.pro</a> for local document conversion to avoid this issue.')
 
             proc = await asyncio.create_subprocess_shell(
                 cmd=cmd,
@@ -84,9 +84,9 @@ class DocConversionTask:
                     pass
                 
                 if self.doc_type == "pdf":
-                    raise HTTPException(status_code=504, detail="Document creation timeout, trying again may work or consider generating a .docx file instead of a .pdf file or reducing the number of images or plots")
+                    raise HTTPException(status_code=504, detail='Document creation timeout, trying again may work or consider generating a .docx file instead of a .pdf file or reducing the number of images or plots. Try using <a href="https://engineeringpaper.pro" target="_blank">EngineeringPaper.pro</a> for local document conversion to avoid this issue.')
                 else:
-                    raise HTTPException(status_code=504, detail="Document Creation Timeout")
+                    raise HTTPException(status_code=504, detail='Document creation timeout, consider using <a href="https://engineeringpaper.pro" target="_blank">EngineeringPaper.pro</a> for local document conversion to avoid this issue.')
 
             if proc.returncode != 0:
                 if self.doc_type == "pdf":
@@ -97,7 +97,7 @@ class DocConversionTask:
             
             # make sure output file exists
             if not os.path.isfile(Path(self.temp_dir_name) / output_file_name):
-                raise HTTPException(status_code=500, detail="Pandoc executed successfully but output file does not exist. Report issue to support@engineeringpaper.xyz")
+                raise HTTPException(status_code=500, detail="Pandoc executed successfully but output file does not exist. Report issue to support@engineeringpaper.com")
         
         except Exception as e:
             self.future.set_exception(e)
@@ -156,7 +156,7 @@ async def convert_markdown_file(request_file: UploadFile, raw_doc_type: Literal[
     try:
         # make sure file is not too large
         if request_file.size and (request_file.size > MAX_INPUT_SIZE):
-            raise HTTPException(status_code=413, detail="Sheet too large for document conversion, reduce size of images in documentation cells.")
+            raise HTTPException(status_code=413, detail='Sheet too large for document conversion, reduce size of images in documentation cells. Consider using <a href="https://engineeringpaper.pro" target="_blank">EngineeringPaper.pro</a> for local document conversion to avoid this limitation.')
 
         # verify file (protects against uploading a binary file, which will cause pandoc to hang)
         first_line = await request_file.read(43)
